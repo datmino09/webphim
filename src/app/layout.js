@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
       >
         <QueryProvider>
           {/* <NavigationLoader/> */}
+          {/* hheheh */}
           <Header/>
           <main>{children}</main>
           <Footer/>
