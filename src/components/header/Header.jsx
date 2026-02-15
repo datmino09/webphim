@@ -76,7 +76,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setLoading(true); router.push('/'); }}>
             <Film className="w-8 h-8 text-red-600" />
-            <span className="text-2xl font-bold">Movie<span className="text-red-600">Hub</span></span>
+            <span className="text-2xl font-bold">Movie<span className="text-red-600">Star</span></span>
           </div>
 
           {/* Search Bar with Dropdown */}

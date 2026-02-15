@@ -5,17 +5,24 @@ import { useMoviesByList } from '../../../lib/api/apiMovies';
 import MovieCard from '../../../components/MovieCard';
 import { Clock } from 'lucide-react';
 import Pagination from '@/components/Pagination';
+import FilterBar from '@/components/FilterBar';
 
 export default function ListPage({ params }) {
     const { slug } = use(params);
     const searchParams = useSearchParams();
     const pageFromUrl = searchParams?.get('page');
     const page = pageFromUrl ? Number(pageFromUrl) : undefined;
-    const { data, isLoading, isError, error } = useMoviesByList(slug, page);
+    const country = searchParams?.get('country') || undefined;
+    const year = searchParams?.get('year') || undefined;
+
+    const { data, isLoading, isError, error } = useMoviesByList(slug, page, country, year);
     const movies = data?.data?.items || [];
-    const title = data?.data?.seoOnPage?.titleHead;
+    const title = data?.data?.seoOnPage?.titleHead || '';
     const pagination = data?.data?.params?.pagination;
-    const basePath = `/list/${slug}`;
+    const urlParams = new URLSearchParams();
+    if (country) urlParams.set('country', country);
+    if (year) urlParams.set('year', year);
+    const basePath = `/list/${slug}${urlParams.toString() ? `?${urlParams.toString()}` : ''}`;
 
     if (isLoading) {
         return (
@@ -40,6 +47,7 @@ export default function ListPage({ params }) {
         <div>
             <main className="min-h-screen pt-36 pb-16 bg-black">
                 <section className="container mx-auto px-4">
+                    <FilterBar />
                     <div className="flex items-center gap-3 mb-8">
                         <Clock className="w-7 h-7 text-red-600" />
                         <h1 className="text-3xl font-bold">{title}</h1>

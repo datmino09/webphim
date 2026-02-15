@@ -54,9 +54,10 @@ export function useMoviesDetail(slug, options = {}) {
     });
 }
 
-async function getMoviesByCategory(slug, page) {
+async function getMoviesByCategory(slug, page, country, year) {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/the-loai/${slug}${page ? `?page=${page}` : ''}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/the-loai/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
+        console.log("API response for category movies:", process.env.NEXT_PUBLIC_OPHIM_API_BASE+ "/v1/api/the-loai/" + slug + (page ? `?page=${page}` : '?page=1') + (country ? `&country=${country}` : '') + (year ? `&year=${year}` : ''));
         return response.data;
     } catch (error) {
         console.error('getMoviesByCategory error:', error);
@@ -64,10 +65,10 @@ async function getMoviesByCategory(slug, page) {
     }
 }
 
-export function useMoviesByCategory(slug, page = undefined, options = {}) {
+export function useMoviesByCategory(slug, page = undefined, country = undefined, year = undefined, options = {}) {
     return useQuery({
-        queryKey: ['movies_by_category', slug, page],
-        queryFn: () => getMoviesByCategory(slug, page),
+        queryKey: ['movies_by_category', slug, page, country, year],
+        queryFn: () => getMoviesByCategory(slug, page, country, year),
         staleTime: 1000 * 60 * 5,
         ...options,
     });
@@ -90,9 +91,9 @@ export function useMoviesBySearch(keyword, options = {}) {
     });
 }
 
-async function getMoviesByList(slug, page) {
+async function getMoviesByList(slug, page, country, year) {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/danh-sach/${slug}${page ? `?page=${page}` : ''}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/danh-sach/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
         return response.data;
     } catch (error) {
         console.error('getMoviesByList error:', error);
@@ -100,11 +101,13 @@ async function getMoviesByList(slug, page) {
     }
 }
 
-export function useMoviesByList(slug, page = undefined, options = {}) {
+export function useMoviesByList(slug, page = undefined, country = undefined, year = undefined, options = {}) {
     return useQuery({
-        queryKey: ['movies_by_list', slug, page],
-        queryFn: () => getMoviesByList(slug, page),
+        queryKey: ['movies_by_list', slug, page, country, year],
+        queryFn: () => getMoviesByList(slug, page, country, year),
         staleTime: 1000 * 60 * 5,
         ...options,
     });
 }
+
+
