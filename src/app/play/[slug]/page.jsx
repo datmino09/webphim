@@ -1,18 +1,77 @@
 'use client';
-import React, { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useMoviesDetail } from '@/lib/api/apiMovies';
 import VideoPlayer from '../components/VideoPlayer';
 import ServerSelection from '../components/ServerSelection';
 import EpisodeNavigation from '../components/EpisodeNavigation';
+import ContinueWatchingBanner from '../components/ContinueWatchingBanner';
 import InfoMovie from '../components/left-column/InfoMovie';
 import Sidebar from '../components/right-column/Sidebar';
 
+const PROGRESS_KEY_PREFIX = 'webphim_progress_';
+
+function loadSavedProgress(slug) {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(`${PROGRESS_KEY_PREFIX}${slug}`);
+    if (!raw) return null;
+    const progress = JSON.parse(raw);
+    if ((progress.episodeIndex ?? 0) > 0 || (progress.serverIndex ?? 0) > 0) {
+      return progress;
+    }
+  } catch { /* localStorage may be unavailable in private/restricted contexts */ }
+  return null;
+}
+
 export default function PlayPage({ params }) {
   const { slug } = use(params);
-  const [currentEpisode, setCurrentEpisode] = React.useState(0);
-  const [currentServer, setCurrentServer] = React.useState(0);
+  const [currentEpisode, setCurrentEpisode] = useState(0);
+  const [currentServer, setCurrentServer] = useState(0);
+  const [savedProgress] = useState(() => loadSavedProgress(slug));
+  const [showBanner, setShowBanner] = useState(() => savedProgress !== null);
   const { data, isLoading, isError, error } = useMoviesDetail(slug);
   const movie = data?.data?.item;
+
+  // Save progress whenever episode or server changes (skip while banner is pending)
+  useEffect(() => {
+    if (showBanner || !movie) return;
+    try {
+      const episodeName =
+        movie.episodes?.[currentServer]?.server_data?.[currentEpisode]?.name ||
+        `Tập ${currentEpisode + 1}`;
+      const serverName = movie.episodes?.[currentServer]?.server_name || '';
+      localStorage.setItem(
+        `${PROGRESS_KEY_PREFIX}${slug}`,
+        JSON.stringify({
+          serverIndex: currentServer,
+          episodeIndex: currentEpisode,
+          episodeName,
+          serverName,
+          updatedAt: Date.now(),
+        })
+      );
+    } catch { /* localStorage may be unavailable or at quota in some environments */ }
+  }, [currentEpisode, currentServer, showBanner, movie, slug]);
+
+  const handleContinueWatching = () => {
+    if (savedProgress && movie) {
+      const serverIdx = Math.min(
+        savedProgress.serverIndex ?? 0,
+        Math.max((movie.episodes?.length ?? 1) - 1, 0)
+      );
+      const episodeIdx = Math.min(
+        savedProgress.episodeIndex ?? 0,
+        Math.max((movie.episodes?.[serverIdx]?.server_data?.length ?? 1) - 1, 0)
+      );
+      setCurrentServer(serverIdx);
+      setCurrentEpisode(episodeIdx);
+    }
+    setShowBanner(false);
+  };
+
+  const handleDismissBanner = () => {
+    setShowBanner(false);
+  };
 
   if (isLoading) {
     return (
@@ -79,6 +138,17 @@ export default function PlayPage({ params }) {
       {/* Video Player Section */}
       <section className="pt-36">
         <VideoPlayer getCurrentVideoUrl={getCurrentVideoUrl} />
+
+        {/* Continue Watching Banner */}
+        {showBanner && savedProgress && (
+          <ContinueWatchingBanner
+            episodeName={savedProgress.episodeName}
+            serverName={savedProgress.serverName}
+            onContinue={handleContinueWatching}
+            onDismiss={handleDismissBanner}
+          />
+        )}
+
         {/* Server Selection */}
         <ServerSelection movie={movie} currentServer={currentServer} setCurrentServer={setCurrentServer} setCurrentEpisode={setCurrentEpisode} />
 
