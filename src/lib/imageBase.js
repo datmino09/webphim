@@ -4,11 +4,11 @@ const normalizeImageBase = (base) => {
   if (!base) {
     return DEFAULT_IMAGE_BASE;
   }
-  return base.replace('img.ophim1.com', 'img.ophim.live');
+  return base.replaceAll('img.ophim1.com', 'img.ophim.live');
 };
 
 export function getImageBase() {
-  return normalizeImageBase(process.env.NEXT_PUBLIC_IMAGE_BASE || DEFAULT_IMAGE_BASE);
+  return normalizeImageBase(process.env.NEXT_PUBLIC_IMAGE_BASE);
 }
 
 export function getImageUrl(path = '') {
