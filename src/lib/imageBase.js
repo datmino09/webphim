@@ -4,7 +4,15 @@ const normalizeImageBase = (base) => {
   if (!base) {
     return DEFAULT_IMAGE_BASE;
   }
-  return base.replaceAll('img.ophim1.com', 'img.ophim.live');
+  try {
+    const url = new URL(base);
+    if (url.hostname === 'img.ophim1.com') {
+      url.hostname = 'img.ophim.live';
+    }
+    return url.toString();
+  } catch (error) {
+    return base.replaceAll('img.ophim1.com', 'img.ophim.live');
+  }
 };
 
 export function getImageBase() {
