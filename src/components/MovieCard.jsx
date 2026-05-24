@@ -2,6 +2,7 @@
 import React from 'react';
 import { Play, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getImageUrl } from '@/lib/imageBase';
 export default function MovieCard({ movie }) {
   const router = useRouter();
   return (
@@ -10,7 +11,7 @@ export default function MovieCard({ movie }) {
     }}>
       <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-gray-800">
         <img
-          src={process.env.NEXT_PUBLIC_IMAGE_BASE + movie.thumb_url}
+          src={getImageUrl(movie.thumb_url)}
           alt={movie.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
