@@ -1,5 +1,6 @@
 import React from 'react'
 import { Loader2, Search as SearchIcon, Star, Play } from 'lucide-react'
+import { getImageUrl } from '@/lib/imageBase'
 
 export default function Search({ isLoading, isError, searchResults, debouncedQuery, handleMovieClick }) {
     return (
@@ -32,7 +33,7 @@ export default function Search({ isLoading, isError, searchResults, debouncedQue
                                         {/* Thumbnail */}
                                         <div className="relative w-16 h-24 flex-shrink-0 rounded overflow-hidden bg-gray-800">
                                             <img
-                                                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE}${movie.thumb_url}`}
+                                            src={getImageUrl(movie.thumb_url)}
                                                 alt={movie.name}
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                                                 onError={(e) => {
