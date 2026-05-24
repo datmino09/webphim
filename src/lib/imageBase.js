@@ -4,24 +4,23 @@ const normalizeImageBase = (base) => {
   if (!base) {
     return DEFAULT_IMAGE_BASE;
   }
-  try {
+  if (base.startsWith('http://') || base.startsWith('https://')) {
     const url = new URL(base);
     if (url.hostname === 'img.ophim1.com') {
       url.hostname = 'img.ophim.live';
     }
     return url.toString();
-  } catch (error) {
-    return base.replaceAll('img.ophim1.com', 'img.ophim.live');
   }
+  return base.replaceAll('img.ophim1.com', 'img.ophim.live');
 };
 
 export function getImageBase() {
   return normalizeImageBase(process.env.NEXT_PUBLIC_IMAGE_BASE);
 }
 
-export function getImageUrl(path = '') {
+export function getImageUrl(path) {
   if (!path) {
-    return getImageBase();
+    return '';
   }
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return normalizeImageBase(path);
