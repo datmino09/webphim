@@ -1,9 +1,11 @@
 import React from 'react'
 import {ChevronLeft, ChevronRight} from 'lucide-react';
 export default function EpisodeNavigation({movie, currentServer, currentEpisode, setCurrentEpisode }) {
+  const episodes = movie.episodes?.[currentServer]?.server_data || [];
+
   return (
     <div>
-      {movie.type !== "single"  && (
+      {movie.type !== "single" && episodes.length > 0 && (
           <div className="bg-gray-900 border-b border-gray-800">
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
               <button 
@@ -18,15 +20,15 @@ export default function EpisodeNavigation({movie, currentServer, currentEpisode,
               <div className="flex items-center gap-2">
                 <span className="text-gray-400">Đang xem:</span>
                 <span className="font-bold text-red-500">
-                  {movie.episodes[currentServer]?.server_data[currentEpisode]?.name || 'Tập 1'}
+                  {episodes[currentEpisode]?.name || 'Tập 1'}
                 </span>
                 <span className="text-gray-400">
-                  / {movie.episodes[currentServer]?.server_data.length || 0} tập
+                  / {episodes.length} tập
                 </span>
               </div>
 
               <button 
-                disabled={currentEpisode === (movie.episodes[currentServer]?.server_data.length - 1)}
+                disabled={currentEpisode >= episodes.length - 1}
                 onClick={() => setCurrentEpisode(currentEpisode + 1)}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >

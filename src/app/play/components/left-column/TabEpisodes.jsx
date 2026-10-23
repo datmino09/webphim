@@ -1,10 +1,12 @@
 import React from 'react'
 
 export default function TabEpisodes({ movie, currentServer,currentEpisode, setCurrentEpisode }) {
+  const episodes = movie.episodes?.[currentServer]?.server_data || [];
+
   return (
     <div>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {movie.episodes[currentServer]?.server_data.map((ep, idx) => (
+            {episodes.map((ep, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentEpisode(idx)}

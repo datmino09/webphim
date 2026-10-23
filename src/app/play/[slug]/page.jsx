@@ -86,7 +86,15 @@ export default function PlayPage({ params }) {
   if (isError) {
     return (
       <section className="container mx-auto px-4 mb-12">
-        <div className="text-red-400">Lỗi tải thể loại: {error?.message}</div>
+        <div className="text-red-400">Lỗi tải thông tin phim: {error?.message}</div>
+      </section>
+    );
+  }
+
+  if (!movie) {
+    return (
+      <section className="container mx-auto px-4 mb-12">
+        <div className="text-red-400">Không tìm thấy thông tin phim.</div>
       </section>
     );
   }
@@ -98,7 +106,11 @@ export default function PlayPage({ params }) {
 
   // Get current video URL
   const getCurrentVideoUrl = () => {
-    if ((movie.episode_current === "Trailer" || movie.episodes?.[0]?.server_data?.[0]?.slug === "") && movie.trailer_url) {
+    if (
+      (movie.episode_current === "Trailer" ||
+        movie.episodes?.[0]?.server_data?.[0]?.slug === "") &&
+      movie.trailer_url
+    ) {
       let url = movie.trailer_url;
 
       if (url.includes('youtube.com/watch?v=')) {
@@ -111,8 +123,9 @@ export default function PlayPage({ params }) {
       return url;
     }
 
-    if (movie.episodes[currentServer]?.server_data[currentEpisode]) {
-      return movie.episodes[currentServer].server_data[currentEpisode].link_embed;
+    const episode = movie.episodes?.[currentServer]?.server_data?.[currentEpisode];
+    if (episode?.link_embed) {
+      return episode.link_embed;
     }
     return movie.trailer_url || '';
   };

@@ -21,7 +21,7 @@ export default function Tabs({ activeTab, setActiveTab, movie, currentServer, co
                 : 'text-gray-400 hover:text-white'
                 }`}
             >
-              Tập phim ({movie.episodes[currentServer]?.server_data.length})
+              Tập phim ({movie.episodes?.[currentServer]?.server_data?.length || 0})
             </button>
           )}
           <button
