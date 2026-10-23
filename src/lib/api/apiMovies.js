@@ -139,11 +139,16 @@ export function useMoviesDetail(slug, options = {}) {
 
 async function getMoviesByCategory(slug, page, country, year) {
     try {
-        if (year && !country) {
-            return getMoviesByYear(year, page);
-        }
+        const params = new URLSearchParams({
+            page: String(page || 1),
+            limit: '24',
+        });
+        if (country) params.set('country', String(country));
+        if (year) params.set('year', String(year));
 
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/the-loai/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
+        const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/the-loai/${encodeURIComponent(slug)}?${params}`,
+        );
         return normalizeCollectionResponse(response.data);
     } catch (error) {
         console.error('getMoviesByCategory error:', error);
