@@ -13,10 +13,14 @@ function normalizeCollectionResponse(payload) {
         return payload;
     }
 
-    const imageBase = payload.pathImage;
+    const imageBase = typeof payload.pathImage === 'string' ? payload.pathImage : '';
     const items = Array.isArray(payload.items)
         ? payload.items.map((item) => {
-            if (!imageBase || !item?.thumb_url || /^https?:\/\//i.test(item.thumb_url)) {
+            if (
+                !imageBase ||
+                typeof item?.thumb_url !== 'string' ||
+                /^https?:\/\//i.test(item.thumb_url)
+            ) {
                 return item;
             }
 
@@ -77,10 +81,15 @@ export function useMovies(options = {}) {
 
 async function getMoviesRelease() {
     try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/subteam`);
+        const params = new URLSearchParams({
+            slug: 'subteam',
+            page: '1',
+            limit: '24',
+        });
+		const response = await axios.get(`${VSMOV_API_BASE}/danh-sach/subteam?${params}`);
 		return normalizeCollectionResponse(response.data);
 	} catch (error) {
-		console.error('getMovies error:', error);
+		console.error('getMoviesRelease error:', error);
 		throw error;
 	}
 }
@@ -168,13 +177,18 @@ export function useMoviesBySearch(keyword, options = {}) {
     });
 }
 
-async function getMoviesByList(slug, page, country, year) {
+async function getMoviesByList(slug, page, country, year, category) {
     try {
-        if (year && !country) {
-            return getMoviesByYear(year, page);
-        }
+        const params = new URLSearchParams({
+            slug: String(slug),
+            page: String(page || 1),
+            limit: '24',
+        });
+        if (country) params.set('country', String(country));
+        if (year) params.set('year', String(year));
+        if (category) params.set('category', String(category));
 
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
+        const response = await axios.get(`${VSMOV_API_BASE}/danh-sach/subteam?${params}`);
         return normalizeCollectionResponse(response.data);
     } catch (error) {
         console.error('getMoviesByList error:', error);
@@ -182,10 +196,10 @@ async function getMoviesByList(slug, page, country, year) {
     }
 }
 
-export function useMoviesByList(slug, page = undefined, country = undefined, year = undefined, options = {}) {
+export function useMoviesByList(slug, page = undefined, country = undefined, year = undefined, category = undefined, options = {}) {
     return useQuery({
-        queryKey: ['movies_by_list', slug, page, country, year],
-        queryFn: () => getMoviesByList(slug, page, country, year),
+        queryKey: ['movies_by_list', slug, page, country, year, category],
+        queryFn: () => getMoviesByList(slug, page, country, year, category),
         staleTime: 1000 * 60 * 5,
         ...options,
     });
