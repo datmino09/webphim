@@ -2,6 +2,44 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { VSMOV_API_BASE } from './apiBase';
 
+function normalizeCollectionResponse(payload) {
+    if (!payload || typeof payload !== 'object') {
+        return payload;
+    }
+
+    // Support both the current API shape ({ items, pagination }) and
+    // the legacy shape ({ data: { items, params } }).
+    if (payload.data?.items) {
+        return payload;
+    }
+
+    const imageBase = payload.pathImage;
+    const items = Array.isArray(payload.items)
+        ? payload.items.map((item) => {
+            if (!imageBase || !item?.thumb_url || /^https?:\/\//i.test(item.thumb_url)) {
+                return item;
+            }
+
+            return {
+                ...item,
+                thumb_url: `${imageBase.replace(/\/?$/, '/')}${item.thumb_url.replace(/^\/+/, '')}`,
+            };
+        })
+        : payload.items;
+
+    return {
+        ...payload,
+        data: {
+            ...payload,
+            items,
+            params: {
+                ...payload.params,
+                pagination: payload.params?.pagination || payload.pagination,
+            },
+        },
+    };
+}
+
 async function getMoviesByYear(year, page = 1) {
     const params = new URLSearchParams({
         limit: '20',
@@ -12,7 +50,7 @@ async function getMoviesByYear(year, page = 1) {
 
     try {
         const response = await axios.get(`${VSMOV_API_BASE}/nam/${year}?${params}`);
-        return response.data;
+        return normalizeCollectionResponse(response.data);
     } catch (error) {
         console.error('getMoviesByYear error:', error);
         throw error;
@@ -22,7 +60,7 @@ async function getMoviesByYear(year, page = 1) {
 async function getMovies() {
 	try {
 		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/phim-moi-cap-nhat?page=1`);
-		return response.data;
+		return normalizeCollectionResponse(response.data);
 	} catch (error) {
 		console.error('getMovies error:', error);
 		throw error;
@@ -40,7 +78,7 @@ export function useMovies(options = {}) {
 async function getMoviesRelease() {
     try {
 		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/subteam`);
-		return response.data;
+		return normalizeCollectionResponse(response.data);
 	} catch (error) {
 		console.error('getMovies error:', error);
 		throw error;
@@ -80,7 +118,7 @@ async function getMoviesByCategory(slug, page, country, year) {
         }
 
         const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/the-loai/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
-        return response.data;
+        return normalizeCollectionResponse(response.data);
     } catch (error) {
         console.error('getMoviesByCategory error:', error);
         throw error;
@@ -99,7 +137,7 @@ export function useMoviesByCategory(slug, page = undefined, country = undefined,
 async function getMoviesBySearch(keyword) {
     try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=20&page=1`);
-        return response.data;
+        return normalizeCollectionResponse(response.data);
     } catch (error) {
         console.error('getMoviesBySearch error:', error);
         throw error;
@@ -120,7 +158,7 @@ async function getMoviesByList(slug, page, country, year) {
         }
 
         const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
-        return response.data;
+        return normalizeCollectionResponse(response.data);
     } catch (error) {
         console.error('getMoviesByList error:', error);
         throw error;
