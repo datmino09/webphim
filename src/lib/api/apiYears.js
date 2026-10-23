@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 async function getYears() {
 	try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/nam-phat-hanh`);
+		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/nam-phat-hanh`);
 		return response.data;
 	} catch (error) {
 		console.error('getYears error:', error);
@@ -21,4 +21,3 @@ export function useYears(options = {}) {
 }
 
 export default getYears;
-
