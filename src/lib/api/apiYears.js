@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { VSMOV_API_BASE } from './apiBase';
 
 async function getYears() {
 	try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/nam-phat-hanh`);
+		const response = await axios.get(`${VSMOV_API_BASE}/nam`);
 		return response.data;
 	} catch (error) {
 		console.error('getYears error:', error);

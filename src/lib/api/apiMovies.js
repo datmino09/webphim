@@ -1,5 +1,24 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { VSMOV_API_BASE } from './apiBase';
+
+async function getMoviesByYear(year, page = 1) {
+    const params = new URLSearchParams({
+        limit: '20',
+        page: String(page),
+        type: 'series',
+        status: 'completed',
+    });
+
+    try {
+        const response = await axios.get(`${VSMOV_API_BASE}/nam/${year}?${params}`);
+        return response.data;
+    } catch (error) {
+        console.error('getMoviesByYear error:', error);
+        throw error;
+    }
+}
+
 async function getMovies() {
 	try {
 		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/phim-moi-cap-nhat?page=1`);
@@ -56,6 +75,10 @@ export function useMoviesDetail(slug, options = {}) {
 
 async function getMoviesByCategory(slug, page, country, year) {
     try {
+        if (year && !country) {
+            return getMoviesByYear(year, page);
+        }
+
         const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/the-loai/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
         return response.data;
     } catch (error) {
@@ -92,6 +115,10 @@ export function useMoviesBySearch(keyword, options = {}) {
 
 async function getMoviesByList(slug, page, country, year) {
     try {
+        if (year && !country) {
+            return getMoviesByYear(year, page);
+        }
+
         const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
         return response.data;
     } catch (error) {
@@ -108,4 +135,3 @@ export function useMoviesByList(slug, page = undefined, country = undefined, yea
         ...options,
     });
 }
-
