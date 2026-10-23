@@ -3,7 +3,7 @@ import React from 'react'
 export default function ServerSelection({movie, currentServer, setCurrentServer, setCurrentEpisode }) {
   return (
     <div>
-      {movie.episodes.length > 1 && (
+      {movie.episodes?.length > 1 && (
           <div className="bg-gray-900 border-b border-gray-800">
             <div className="container mx-auto px-4 py-3">
               <div className="flex items-center gap-3 flex-wrap">

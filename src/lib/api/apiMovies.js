@@ -96,9 +96,26 @@ export function useMoviesRelease(options = {}) {
 async function getMoviesDetail(slug) {
     try {
 		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/phim/${slug}`);
-		return response.data;
+        const payload = response.data;
+
+        // The detail API returns movie and episodes at the top level,
+        // while the page consumes the shared { data: { item } } shape.
+        if (payload?.movie) {
+            return {
+                ...payload,
+                data: {
+                    ...payload.movie,
+                    item: {
+                        ...payload.movie,
+                        episodes: payload.episodes || [],
+                    },
+                },
+            };
+        }
+
+		return payload;
 	} catch (error) {
-		console.error('getMovies error:', error);
+		console.error('getMoviesDetail error:', error);
 		throw error;
 	}
 }
