@@ -12,6 +12,9 @@ export function getImageBase() {
 }
 
 export function getImageUrl(path = '') {
+  if (typeof path !== 'string') {
+    return getImageBase();
+  }
   if (!path) {
     return getImageBase();
   }

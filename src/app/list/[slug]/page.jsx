@@ -14,14 +14,16 @@ export default function ListPage({ params }) {
     const page = pageFromUrl ? Number(pageFromUrl) : undefined;
     const country = searchParams?.get('country') || undefined;
     const year = searchParams?.get('year') || undefined;
+    const category = searchParams?.get('category') || undefined;
 
-    const { data, isLoading, isError, error } = useMoviesByList(slug, page, country, year);
+    const { data, isLoading, isError, error } = useMoviesByList(slug, page, country, year, category);
     const movies = data?.data?.items || [];
     const title = data?.data?.seoOnPage?.titleHead || '';
     const pagination = data?.data?.params?.pagination;
     const urlParams = new URLSearchParams();
     if (country) urlParams.set('country', country);
     if (year) urlParams.set('year', year);
+    if (category) urlParams.set('category', category);
     const basePath = `/list/${slug}${urlParams.toString() ? `?${urlParams.toString()}` : ''}`;
 
     if (isLoading) {
