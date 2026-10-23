@@ -17,7 +17,6 @@ export default function CategoryPage({ params }) {
 
   const { data, isLoading, isError, error } = useMoviesByCategory(slug, page, country, year);
   const movies = data?.data?.items || [];
-  console.log("Movies in category:", movies);
   const title = data?.data?.seoOnPage?.titleHead || '';
   const pagination = data?.data?.params?.pagination;
   const urlParams = new URLSearchParams();
