@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
  
 async function getCategories() {
 	try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/the-loai`);
+		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/the-loai`);
 		return response.data;
 	} catch (error) {
 		console.error('getCategories error:', error);
@@ -22,4 +22,3 @@ export function useCategories(options = {}) {
 }
 
 export default getCategories;
-

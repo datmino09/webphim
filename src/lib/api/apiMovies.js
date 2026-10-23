@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 async function getMovies() {
 	try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/home`);
+		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/phim-moi-cap-nhat?page=1`);
 		return response.data;
 	} catch (error) {
 		console.error('getMovies error:', error);
@@ -20,7 +20,7 @@ export function useMovies(options = {}) {
 
 async function getMoviesRelease() {
     try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/danh-sach/phim-sap-chieu`);
+		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/subteam`);
 		return response.data;
 	} catch (error) {
 		console.error('getMovies error:', error);
@@ -38,7 +38,7 @@ export function useMoviesRelease(options = {}) {
 
 async function getMoviesDetail(slug) {
     try {
-		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/phim/${slug}`);
+		const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/phim/${slug}`);
 		return response.data;
 	} catch (error) {
 		console.error('getMovies error:', error);
@@ -56,8 +56,7 @@ export function useMoviesDetail(slug, options = {}) {
 
 async function getMoviesByCategory(slug, page, country, year) {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/the-loai/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
-        console.log("API response for category movies:", process.env.NEXT_PUBLIC_OPHIM_API_BASE+ "/v1/api/the-loai/" + slug + (page ? `?page=${page}` : '?page=1') + (country ? `&country=${country}` : '') + (year ? `&year=${year}` : ''));
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/the-loai/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
         return response.data;
     } catch (error) {
         console.error('getMoviesByCategory error:', error);
@@ -76,7 +75,7 @@ export function useMoviesByCategory(slug, page = undefined, country = undefined,
 
 async function getMoviesBySearch(keyword) {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/tim-kiem?keyword=${keyword}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=20&page=1`);
         return response.data;
     } catch (error) {
         console.error('getMoviesBySearch error:', error);
@@ -93,7 +92,7 @@ export function useMoviesBySearch(keyword, options = {}) {
 
 async function getMoviesByList(slug, page, country, year) {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/v1/api/danh-sach/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_OPHIM_API_BASE}/danh-sach/${slug}${page ? `?page=${page}` : '?page=1'}${country ? `&country=${country}` : ''}${year ? `&year=${year}` : ''}`);
         return response.data;
     } catch (error) {
         console.error('getMoviesByList error:', error);
@@ -109,5 +108,4 @@ export function useMoviesByList(slug, page = undefined, country = undefined, yea
         ...options,
     });
 }
-
 
